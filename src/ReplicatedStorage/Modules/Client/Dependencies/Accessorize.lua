@@ -76,8 +76,11 @@ function module:Init()
         Face = "";
     }
 
+    local lastOutfit = {}
+
     RunService.Stepped:Connect(function(time, deltaTime)
-        local Humanoid = game.Players.LocalPlayer.Character.Humanoid
+        if not game.Players.LocalPlayer.Character then return end
+        local Humanoid = game.Players.LocalPlayer.Character:WaitForChild("Humanoid")
         local HumanoidDescription = Humanoid:GetAppliedDescription()
 
         -- Get Accessories
@@ -94,6 +97,8 @@ function module:Init()
         -- Get Scale
         -- For Future Updates
 
+        if lastOutfit == Outfit then return end
+        lastOutfit = Outfit
         -- Debug
         print(Outfit)
         -- Get Asset Name
@@ -107,7 +112,8 @@ function module:Init()
 
                 end
             else
-                if( d=="" or d=="0") then return end
+                if( d=="" or d==0) then return end
+                print(d)
                 local success1, productInfo = pcall(game.MarketplaceService.GetProductInfo, game.MarketplaceService, d)
                 if not success1 then assert(false,"Invalid ID.") end
 
