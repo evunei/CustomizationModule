@@ -107,6 +107,7 @@ function module:Init()
 
                 end
             else
+                if( d=="" or d=="0") then return end
                 local success1, productInfo = pcall(game.MarketplaceService.GetProductInfo, game.MarketplaceService, d)
                 if not success1 then assert(false,"Invalid ID.") end
 
