@@ -53,7 +53,7 @@ function module.new()
 end
 
 function module:Init()
-    print("Init")
+    print("Init Client")
     local Events = script.Parent.Parent.Parent.Parent.Events
 
     -- Accessory Insertion
@@ -107,7 +107,7 @@ function module:Init()
 
                 end
             else
-                local success1, productInfo = pcall(game.MarketplaceService.GetProductInfo, game.MarketplaceService, a)
+                local success1, productInfo = pcall(game.MarketplaceService.GetProductInfo, game.MarketplaceService, d)
                 if not success1 then assert(false,"Invalid ID.") end
 
                 print(productInfo.Name)
