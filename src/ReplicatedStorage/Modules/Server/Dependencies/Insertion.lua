@@ -50,10 +50,17 @@ function module.new()
 
     local InsertService = game:GetService('InsertService')
 
+    local ClientEvents = script.Parent.Parent.Parent.Parent.Events.Client
+    local NotifyEvent = Instance.new("RemoteEvent",ClientEvents)
+    NotifyEvent.Name = "FireNotification"
+
     function m1.InsertAccessory(player,assetId)
 
         local success1, productInfo = pcall(game.MarketplaceService.GetProductInfo, game.MarketplaceService, assetId)
-        if not success1 then assert(false,"Invalid ID.") end
+        if not success1 then 
+            NotifyEvent:FireClient(player,15,"Error","Invalid Id.".."\n".."Item Id: "..assetId)
+            assert(false,"Invalid ID.") 
+        end
 
         local typeId = productInfo.AssetTypeId
 
@@ -78,20 +85,35 @@ function module.new()
 					})
 					HumanoidDescription:SetAccessories(accessories, true)
                 else
+                    NotifyEvent:FireClient(player,15,"Error","You have equipped an unsupported Item.".."\n".."Item Id: "..assetId)
                     assert(false,"Unsupported Item.")
                     return
                 end
                 Humanoid:ApplyDescription(HumanoidDescription)
+                NotifyEvent:FireClient(player,15,"Success!","You have equipped the following item:".."\n".."Item Name: "..productInfo.Name.."\n".."Item Id: "..assetId)
             end
         end
     end
 
     function m1.ClearAccessory(player,name)
+        if not name then
+            local list = ""
+            for _,child in pairs(player.Character:GetChildren())do
+                if (child:IsA("Accessory"))then
+                    list = list.."\n"..child.Name
+                    child:Destroy()
+                end
+            end 
+            NotifyEvent:FireClient(player,15,"Success!","You have removed the following items:".."\n"..list)
+            return
+        end
         for _,child in pairs(player.Character:GetChildren())do
             if child.Name:lower() == name:lower() then
+                if not (child:IsA("Accessory") or child:IsA("Shirt") or child:IsA("Pants") or child:IsA("ShirtGraphic")) then return end
                 child:Destroy()
 
                 local Humanoid = player.Character.Humanoid
+                NotifyEvent:FireClient(player,15,"Success!","You have removed the following item:".."\n"..child.Name)
             end
         end
     end
