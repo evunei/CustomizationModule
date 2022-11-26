@@ -96,24 +96,37 @@ function module.new()
     end
 
     function m1.ClearAccessory(player,name)
-        if not name then
-            local list = ""
+        if not tonumber(name) then
+            if not name then
+                local list = ""
+                for _,child in pairs(player.Character:GetChildren())do
+                    if (child:IsA("Accessory"))then
+                        list = list.."\n"..child.Name
+                        child:Destroy()
+                    end
+                end 
+                NotifyEvent:FireClient(player,15,"Success!","You have removed the following items:".."\n"..list)
+                return
+            end
             for _,child in pairs(player.Character:GetChildren())do
-                if (child:IsA("Accessory"))then
-                    list = list.."\n"..child.Name
+                if child.Name:lower() == name:lower() then
+                    if not (child:IsA("Accessory") or child:IsA("Shirt") or child:IsA("Pants") or child:IsA("ShirtGraphic")) then return end
                     child:Destroy()
+    
+                    local Humanoid = player.Character.Humanoid
+                    NotifyEvent:FireClient(player,15,"Success!","You have removed the following item:".."\n"..child.Name)
                 end
-            end 
-            NotifyEvent:FireClient(player,15,"Success!","You have removed the following items:".."\n"..list)
-            return
-        end
-        for _,child in pairs(player.Character:GetChildren())do
-            if child.Name:lower() == name:lower() then
-                if not (child:IsA("Accessory") or child:IsA("Shirt") or child:IsA("Pants") or child:IsA("ShirtGraphic")) then return end
-                child:Destroy()
-
-                local Humanoid = player.Character.Humanoid
-                NotifyEvent:FireClient(player,15,"Success!","You have removed the following item:".."\n"..child.Name)
+            end
+        else
+            local success, model = pcall(InsertService.LoadAsset, InsertService, tonumber(name))
+            if success and model then
+                local accessory = model:GetChildren()[1]
+                if accessory then
+                    local find = player.Character:FindFirstChild(accessory.Name)
+                    if find then
+                        find:Destroy()
+                    end
+                end
             end
         end
     end
